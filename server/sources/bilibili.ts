@@ -175,8 +175,11 @@ const hotSearch = defineSource(async () => {
     console.error("[bilibili] square:", e instanceof Error ? e.message : String(e))
   }
 
+  // 注意：这里必须 throw 而不是 return []。
+  // server/api/s/index.ts 的逻辑是「取数抛错 → 回落到上一次的缓存(30 分钟 TTL)」，
+  // 返回空数组则既不写缓存也不触发回落，会直接显示空榜。
   console.error("[bilibili] all endpoints failed")
-  return []
+  throw new Error("bilibili: all endpoints failed")
 })
 
 const hotVideo = defineSource(async () => {
