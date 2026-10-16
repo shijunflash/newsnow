@@ -16,7 +16,11 @@ export async function rss2json(url: string): Promise<RSSInfo | undefined> {
 
   const result = xml.parse(data as string)
 
-  let channel = result.rss && result.rss.channel ? result.rss.channel : result.feed
+  // RDF(RSS 1.0，如德国之声) 的 channel 与 item 是平级挂在 rdf:RDF 下的
+  const rdf = result["rdf:RDF"]
+  let channel = result.rss && result.rss.channel
+    ? result.rss.channel
+    : (result.feed ?? (rdf ? rdf.channel : undefined))
   if (Array.isArray(channel)) channel = channel[0]
 
   const rss = {
@@ -30,6 +34,7 @@ export async function rss2json(url: string): Promise<RSSInfo | undefined> {
   }
 
   let items = channel.item || channel.entry || []
+  if (!items.length && rdf && rdf.item) items = rdf.item
   if (items && !Array.isArray(items)) items = [items]
 
   for (let i = 0; i < items.length; i++) {
