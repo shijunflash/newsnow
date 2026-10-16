@@ -105,7 +105,7 @@ pnpm dev
 
 ## License
 
-[MIT](./LICENSE) 
+[MIT](./LICENSE) © ourongxing
 
 ## 赞赏
 如果你依赖本服务，欢迎赞助以帮助它长期运行。如果需要定制或者其他帮助，也可以下列方式联系备注。

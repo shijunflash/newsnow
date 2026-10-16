@@ -71,7 +71,7 @@ export function Menu() {
               </li>
               <li className="flex gap-2 items-center">
                 <a
-                  href="https://github.com/amclubs/newsnow"
+                  href="https://github.com/ourongxing/newsnow"
                 >
                   <img
                     alt="GitHub stars badge"
@@ -79,7 +79,7 @@ export function Menu() {
                   />
                 </a>
                 <a
-                  href="https://github.com/amclubs/newsnow/fork"
+                  href="https://github.com/ourongxing/newsnow/fork"
                 >
                   <img
                     alt="GitHub forks badge"

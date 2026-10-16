@@ -88,17 +88,49 @@ interface HotVideoRes {
   }
 }
 
-const hotSearch = defineSource(async () => {
-  const url = "https://s.search.bilibili.com/main/hotword?limit=30"
-  const res: WapRes = await myFetch(url)
+interface SquareRes {
+  data: {
+    trending: {
+      list: {
+        keyword: string
+        show_name?: string
+      }[]
+    }
+  }
+}
 
-  return res.list.map(k => ({
+// 说明（Hermes 2026-10 补丁）：s.search.bilibili.com 在部分出口 IP 上会 403，
+// 这里改成多端点依次尝试：① wap 热词接口（上游原方案）② 搜索广场接口
+const hotSearch = defineSource(async () => {
+  try {
+    const url = "https://s.search.bilibili.com/main/hotword?limit=30"
+    const res = await myFetch(url, {
+      headers: { Referer: "https://www.bilibili.com/" },
+    }) as WapRes
+
+    const list = res?.list ?? []
+    if (list.length) {
+      return list.map(k => ({
+        id: k.keyword,
+        title: k.show_name,
+        url: `https://search.bilibili.com/all?keyword=${encodeURIComponent(k.keyword)}`,
+        extra: {
+          icon: k.icon,
+        },
+      }))
+    }
+  } catch (e) {
+    console.error("[bilibili]", e instanceof Error ? e.message : String(e))
+  }
+
+  const res2 = await myFetch("https://api.bilibili.com/x/web-interface/search/square?limit=50", {
+    headers: { Referer: "https://www.bilibili.com/" },
+  }) as SquareRes
+
+  return (res2?.data?.trending?.list ?? []).map(k => ({
     id: k.keyword,
-    title: k.show_name,
+    title: k.show_name || k.keyword,
     url: `https://search.bilibili.com/all?keyword=${encodeURIComponent(k.keyword)}`,
-    extra: {
-      icon: k.icon,
-    },
   }))
 })
 
