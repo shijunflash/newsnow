@@ -1,22 +1,37 @@
-# NewsNow
-
-![](screenshots/preview-1.png)
-
-![](screenshots/preview-2.png)
+![](/public/og-image.png)
 
 [English](./README.md) | 简体中文 | [日本語](README.ja-JP.md)
 
 ***优雅地阅读实时热门新闻***
 
 > [!NOTE]
-> 当前版本为 DEMO，仅支持中文。正式版将提供更好的定制化功能和英文内容支持。
->
+> NewsNext（下一代 NewsNow）即将到来，快加入 [等待名单](https://tally.so/r/lbxxbo) 吧。
 
 ## 功能特性
 - 优雅的阅读界面设计，实时获取最新热点新闻
 - 支持 GitHub 登录及数据同步
 - 默认缓存时长为 30 分钟，登录用户可强制刷新获取最新数据
 - 根据内容源更新频率动态调整抓取间隔（最快每 2 分钟），避免频繁抓取导致 IP 被封禁
+- 支持 MCP server
+
+```json
+{
+  "mcpServers": {
+    "newsnow": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "newsnow-mcp-server"
+      ],
+      "env": {
+        "BASE_URL": "https://newsnow.busiyi.world"
+      }
+    }
+  }
+}
+```
+
+你可以将 `BASE_URL` 修改为你的域名。
 
 ## 部署指南
 
@@ -84,10 +99,17 @@ pnpm dev
 - 扩展 **数据源** 以涵盖多种语言的全球新闻
 
 ## 贡献指南
-欢迎贡献代码！您可以提交 pull request 或创建 issue 来提出功能请求和报告 bug
+~~欢迎贡献代码！您可以提交 pull request 或创建 issue 来提出功能请求和报告 bug~~
+
+新版即将到来，当前版本将不再接受贡献。
 
 ## License
 
 [MIT](./LICENSE) 
 
+## 赞赏
+如果你依赖本服务，欢迎赞助以帮助它长期运行。如果需要定制或者其他帮助，也可以下列方式联系备注。
 
+![](./screenshots/reward.gif)
+
+<a href="https://hellogithub.com/repository/c2978695e74a423189e9ca2543ab3b36" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=c2978695e74a423189e9ca2543ab3b36&claim_uid=SMJiFwlsKCkWf89&theme=small" alt="Featured｜HelloGitHub" /></a>

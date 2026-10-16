@@ -1,12 +1,9 @@
-# NewsNow
-
-![](screenshots/preview-1.png)
-![](screenshots/preview-2.png)
+![](/public/og-image.png)
 
 [English](./README.md) | [简体中文](README.zh-CN.md) | 日本語
 
 > [!NOTE]
-> 本バージョンはデモ版であり、現在中国語のみ対応しています。カスタマイズ機能や英語コンテンツをサポートした正式版は後日リリース予定です。
+> NewsNext, the next gen of NewsNow, is coming soon, join the [waitlist](https://tally.so/r/yPBBYg).
 
 ***リアルタイムで最新のニュースをエレガントに読む***
 
@@ -16,6 +13,24 @@
 - GitHub OAuthログインとデータ同期
 - デフォルトのキャッシュ期間は30分（ログインユーザーは強制更新可能）
 - リソース使用を最適化し、IPブロックを防ぐためのソース更新頻度に基づく適応型スクレイピング間隔（最短2分）
+- MCPサーバーをサポート
+
+```json
+{
+  "mcpServers": {
+    "newsnow": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "newsnow-mcp-server"
+      ],
+      "env": {
+        "BASE_URL": "https://newsnow.busiyi.world"
+      }
+    }
+  }
+}
+```
 
 ## デプロイ
 
@@ -86,31 +101,15 @@ pnpm dev
 - **データソース**の拡充による多言語対応のグローバルニュースカバレッジ
 
 ## コントリビューション
-コントリビューションを歓迎します！機能リクエストやバグレポートのために、プルリクエストやイシューの作成をお気軽にどうぞ。
+~~コントリビューションを歓迎します！機能リクエストやバグレポートのために、プルリクエストやイシューの作成をお気軽にどうぞ。~~
+
+新バージョンは近日公開予定のため、現在のバージョンではコントリビューションの受付を終了します。
 
 ## ライセンス
-MIT 
+[MIT](./LICENSE) © ourongxing
 
-# 🙏 感谢
-[ourongxing](https://github.com/ourongxing/newsnow/)
+## スポンサー
 
- # 
-<center>
-<details><summary><strong> [点击展开] 赞赏支持 ~🧧</strong></summary>
-*我非常感谢您的赞赏和支持，它们将极大地激励我继续创新，持续产生有价值的工作。*
+このサービスをご利用いただいている場合、長期的な運営を支援するスポンサーを歓迎します。カスタマイズやその他のサポートが必要な場合も、以下の連絡方法から備考を添えてお問い合わせください。
 
-- **USDT-TRC20:** `TWTxUyay6QJN3K4fs4kvJTT8Zfa2mWTwDD`
-- **TRX-TRC20:** `TWTxUyay6QJN3K4fs4kvJTT8Zfa2mWTwDD`
-
-<div align="center"> 
-  <img src="https://github.com/user-attachments/assets/e6cdc42a-6374-4722-b833-601738f72196" width="200"></br> 
-  TRC10/TRC20扫码支付 
-</div> 
-</details>
-</center>
-
- #
- 免责声明:
- - 1、该项目设计和开发仅供学习、研究和安全测试目的。请于下载后 24 小时内删除, 不得用作任何商业用途, 文字、数据及图片均有所属版权, 如转载须注明来源。
- - 2、使用本程序必循遵守部署服务器所在地区的法律、所在国家和用户所在国家的法律法规。对任何人或团体使用该项目时产生的任何后果由使用者承担。
- - 3、作者不对使用该项目可能引起的任何直接或间接损害负责。作者保留随时更新免责声明的权利，且不另行通知。
+![](./screenshots/reward.gif)
