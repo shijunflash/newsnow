@@ -99,8 +99,20 @@ interface SquareRes {
   }
 }
 
+interface AppRes {
+  code: number
+  data: {
+    list: {
+      keyword: string
+      show_name?: string
+      hot_id?: number
+      is_commercial?: string
+    }[]
+  }
+}
+
 // 说明（Hermes 2026-10 补丁）：s.search.bilibili.com 在部分出口 IP 上会 403，
-// 这里改成多端点依次尝试：① wap 热词接口（上游原方案）② 搜索广场接口
+// 这里改成多端点依次尝试：① wap 热词接口 ② APP 接口（主机不同）③ 搜索广场接口
 const hotSearch = defineSource(async () => {
   try {
     const url = "https://s.search.bilibili.com/main/hotword?limit=30"
@@ -123,6 +135,25 @@ const hotSearch = defineSource(async () => {
     console.error("[bilibili]", e instanceof Error ? e.message : String(e))
   }
 
+  // ② APP 接口：主机名不同（app.bilibili.com），在部分出口 IP 上仍可用
+  try {
+    const resApp = await myFetch("https://app.bilibili.com/x/v2/search/trending/ranking?limit=30", {
+      headers: { Referer: "https://www.bilibili.com/" },
+    }) as AppRes
+
+    const listApp = resApp?.data?.list ?? []
+    if (listApp.length) {
+      return listApp.map(k => ({
+        id: k.keyword,
+        title: k.show_name || k.keyword,
+        url: `https://search.bilibili.com/all?keyword=${encodeURIComponent(k.keyword)}`,
+      }))
+    }
+  } catch (e) {
+    console.error("[bilibili] app:", e instanceof Error ? e.message : String(e))
+  }
+
+  // ③ 搜索广场接口
   const res2 = await myFetch("https://api.bilibili.com/x/web-interface/search/square?limit=50", {
     headers: { Referer: "https://www.bilibili.com/" },
   }) as SquareRes
