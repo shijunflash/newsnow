@@ -111,9 +111,31 @@ interface AppRes {
   }
 }
 
-// 说明（Hermes 2026-10 补丁）：s.search.bilibili.com 在部分出口 IP 上会 403，
-// 这里改成多端点依次尝试：① wap 热词接口 ② APP 接口（主机不同）③ 搜索广场接口
+// 说明（Hermes 2026-10 补丁）：B站会限流云厂商共享出口 IP，单端点不可靠。
+// 按「实测稳定度」排序依次尝试，任一成功即返回；末档也不抛错（避免整源 500）。
+//   ① app.bilibili.com APP 接口（不同主机名，最稳）
+//   ② s.search.bilibili.com wap 热词接口
+//   ③ api.bilibili.com 搜索广场接口（云出口常返回 412，仅作兜底）
 const hotSearch = defineSource(async () => {
+  // ① APP 接口
+  try {
+    const resApp = await myFetch("https://app.bilibili.com/x/v2/search/trending/ranking?limit=30", {
+      headers: { Referer: "https://www.bilibili.com/" },
+    }) as AppRes
+
+    const listApp = resApp?.data?.list ?? []
+    if (listApp.length) {
+      return listApp.map(k => ({
+        id: k.keyword,
+        title: k.show_name || k.keyword,
+        url: `https://search.bilibili.com/all?keyword=${encodeURIComponent(k.keyword)}`,
+      }))
+    }
+  } catch (e) {
+    console.error("[bilibili] app:", e instanceof Error ? e.message : String(e))
+  }
+
+  // ② wap 热词接口
   try {
     const url = "https://s.search.bilibili.com/main/hotword?limit=30"
     const res = await myFetch(url, {
@@ -132,37 +154,29 @@ const hotSearch = defineSource(async () => {
       }))
     }
   } catch (e) {
-    console.error("[bilibili]", e instanceof Error ? e.message : String(e))
+    console.error("[bilibili] hotword:", e instanceof Error ? e.message : String(e))
   }
 
-  // ② APP 接口：主机名不同（app.bilibili.com），在部分出口 IP 上仍可用
+  // ③ 搜索广场接口（兜底，失败也不抛错）
   try {
-    const resApp = await myFetch("https://app.bilibili.com/x/v2/search/trending/ranking?limit=30", {
+    const res2 = await myFetch("https://api.bilibili.com/x/web-interface/search/square?limit=50", {
       headers: { Referer: "https://www.bilibili.com/" },
-    }) as AppRes
+    }) as SquareRes
 
-    const listApp = resApp?.data?.list ?? []
-    if (listApp.length) {
-      return listApp.map(k => ({
+    const list2 = res2?.data?.trending?.list ?? []
+    if (list2.length) {
+      return list2.map(k => ({
         id: k.keyword,
         title: k.show_name || k.keyword,
         url: `https://search.bilibili.com/all?keyword=${encodeURIComponent(k.keyword)}`,
       }))
     }
   } catch (e) {
-    console.error("[bilibili] app:", e instanceof Error ? e.message : String(e))
+    console.error("[bilibili] square:", e instanceof Error ? e.message : String(e))
   }
 
-  // ③ 搜索广场接口
-  const res2 = await myFetch("https://api.bilibili.com/x/web-interface/search/square?limit=50", {
-    headers: { Referer: "https://www.bilibili.com/" },
-  }) as SquareRes
-
-  return (res2?.data?.trending?.list ?? []).map(k => ({
-    id: k.keyword,
-    title: k.show_name || k.keyword,
-    url: `https://search.bilibili.com/all?keyword=${encodeURIComponent(k.keyword)}`,
-  }))
+  console.error("[bilibili] all endpoints failed")
+  return []
 })
 
 const hotVideo = defineSource(async () => {
